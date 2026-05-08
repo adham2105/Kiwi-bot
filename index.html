@@ -20,6 +20,12 @@
             transform: translateY(-12px) scale(1.03);
             box-shadow: 0 25px 50px -12px rgb(139 195 74 / 0.25);
         }
+        .image-preview {
+            width: 100%;
+            height: 208px;
+            object-fit: cover;
+            background-color: #18181b;
+        }
     </style>
 </head>
 <body class="bg-zinc-950 text-white">
@@ -98,17 +104,15 @@
     </footer>
 
     <script>
-        // ====================== FAYLLARINGIZNI SHU YERGA QO'SHING ======================
         let files = [
-            // ==================== RASMLAR ====================
+            // ==================== RASMLAR (rasm preview chiqadi) ====================
             {
                 id: 1,
                 name: "IMG_20250508_145632.jpg",
                 size: "6.8 MB",
                 date: "08.05.2026",
                 type: "image",
-                icon: "photo_2026-05-08_17-48-02.jpg",
-                link: "photo_2026-05-08_17-48-02.jpg"   // ← HAVOLANI O'ZGARTIRING
+                link: "photo_2026-05-08_17-48-02.jpg"   // ← Bu yerga o'z rasmingizning to'g'ri havolasini qo'ying
             },
             {
                 id: 2,
@@ -116,13 +120,20 @@
                 size: "4.2 MB",
                 date: "07.05.2026",
                 type: "image",
-                icon: "🖼",
-                link: "#"
+                link: "https://picsum.photos/id/201/800/600"
+            },
+            {
+                id: 3,
+                name: "portrait.jpg",
+                size: "3.9 MB",
+                date: "06.05.2026",
+                type: "image",
+                link: "https://picsum.photos/id/64/800/600"
             },
 
             // ==================== VIDEOLAR ====================
             {
-                id: 3,
+                id: 4,
                 name: "family_video.mp4",
                 size: "285 MB",
                 date: "08.05.2026",
@@ -133,21 +144,12 @@
 
             // ==================== HUJJATLAR ====================
             {
-                id: 4,
+                id: 5,
                 name: "Shartnoma_2026.pdf",
                 size: "1.8 MB",
                 date: "08.05.2026",
                 type: "document",
                 icon: "📄",
-                link: "#"
-            },
-            {
-                id: 5,
-                name: "Hisobot.xlsx",
-                size: "956 KB",
-                date: "06.05.2026",
-                type: "document",
-                icon: "📊",
                 link: "#"
             },
 
@@ -162,7 +164,6 @@
                 link: "#"
             }
         ];
-        // =============================================================================
 
         function renderFiles(gridId, filteredFiles) {
             const grid = document.getElementById(gridId);
@@ -174,11 +175,26 @@
             }
 
             filteredFiles.forEach(file => {
+                let previewHTML = '';
+
+                if (file.type === "image") {
+                    previewHTML = `
+                        <img src="${file.link}" 
+                             class="image-preview w-full" 
+                             alt="${file.name}"
+                             onerror="this.src='https://via.placeholder.com/400x300?text=Rasm+topilmadi'">
+                    `;
+                } else {
+                    previewHTML = `
+                        <div class="h-52 bg-zinc-800 flex items-center justify-center text-7xl border-b border-zinc-700">
+                            ${file.icon || '📁'}
+                        </div>
+                    `;
+                }
+
                 const card = `
                 <div class="file-card bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
-                    <div class="h-52 bg-zinc-800 flex items-center justify-center text-7xl border-b border-zinc-700">
-                        ${file.icon}
-                    </div>
+                    ${previewHTML}
                     <div class="p-6">
                         <p class="font-medium line-clamp-2 min-h-[52px]">${file.name}</p>
                         <div class="flex justify-between text-xs text-zinc-400 mt-4">
@@ -196,17 +212,14 @@
         }
 
         function showTab(tabIndex) {
-            // Tab rangini o'zgartirish
             document.querySelectorAll('#tabs button').forEach((btn, i) => {
                 if (i === tabIndex) btn.classList.add('tab-active');
                 else btn.classList.remove('tab-active');
             });
 
-            // Kontentni ko‘rsatish
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.getElementById(`content${tabIndex}`).classList.remove('hidden');
 
-            // Fayllarni filtrlab chiqarish
             const typeMap = ['image', 'video', 'document', 'other'];
             const filtered = files.filter(f => f.type === typeMap[tabIndex]);
             renderFiles(`grid${tabIndex}`, filtered);
@@ -230,7 +243,6 @@
             renderFiles(`grid${activeIndex}`, filtered);
         }
 
-        // Sahifa yuklanganda birinchi bo'limni ochish
         window.onload = () => showTab(0);
     </script>
 </body>
